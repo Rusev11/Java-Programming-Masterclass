@@ -32,13 +32,26 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
   </component>
-  <component name="RunManager" selected="Application.Main (1)">
+  <component name="RunManager" selected="Application.Main (2)">
     <configuration name="Main (1)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Playlist.Main" />
       <module name="Inner and Abstract Classes &amp; Interfaces" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="Playlist.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Main (2)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="AbstractClassChallenge.Main" />
+      <module name="Inner and Abstract Classes &amp; Interfaces" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="AbstractClassChallenge.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -61,6 +74,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Main (2)" />
         <item itemvalue="Application.Main (1)" />
         <item itemvalue="Application.Main" />
       </list>
