@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/Naming Conventions and Packages, static and final keywords.iml" filepath="$PROJECT_DIR$/.idea/Naming Conventions and Packages, static and final keywords.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Package Challenge/Series/Series.iml" filepath="$PROJECT_DIR$/Package Challenge/Series/Series.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Package Challenge/Series Test/Series Test.iml" filepath="$PROJECT_DIR$/Package Challenge/Series Test/Series Test.iml" />
+    </modules>
+  </component>
+</project>
