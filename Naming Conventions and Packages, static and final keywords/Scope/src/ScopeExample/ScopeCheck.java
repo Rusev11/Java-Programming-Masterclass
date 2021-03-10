@@ -1,3 +1,5 @@
+package ScopeExample;
+
 public class ScopeCheck {
     public int publicVar = 0;
     private int varOne = 1;
