@@ -1,110 +1,83 @@
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class Main {
-    private static Map<String, HeavenlyBody> solarSystem = new HashMap<>();
-    private static Set<HeavenlyBody> planets = new HashSet<>();
-
     public static void main(String[] args) {
-        HeavenlyBody temp = new HeavenlyBody("Mercury", 88);
-        solarSystem.put(temp.getName(), temp);
-        planets.add(temp);
+        Set<Integer> squares = new HashSet<>();
+        Set<Integer> cubes = new HashSet<>();
 
-        temp = new HeavenlyBody("Venus", 225);
-        solarSystem.put(temp.getName(), temp);
-        planets.add(temp);
-
-        temp = new HeavenlyBody("Earth", 365);
-        solarSystem.put(temp.getName(), temp);
-        planets.add(temp);
-
-        HeavenlyBody tempMoon = new HeavenlyBody("Moon", 27);
-        solarSystem.put(tempMoon.getName(), tempMoon);
-        temp.addMoon(tempMoon);
-
-        temp = new HeavenlyBody("Mars", 687);
-        solarSystem.put(temp.getName(), temp);
-        planets.add(temp);
-
-        tempMoon = new HeavenlyBody("Deimos", 1.3);
-        solarSystem.put(tempMoon.getName(), tempMoon);
-        temp.addMoon(tempMoon); // temp is still Mars
-
-        tempMoon = new HeavenlyBody("Phobos", 0.3);
-        solarSystem.put(tempMoon.getName(), tempMoon);
-        temp.addMoon(tempMoon); // temp is still Mars
-
-        temp = new HeavenlyBody("Jupiter", 4332);
-        solarSystem.put(temp.getName(), temp);
-        planets.add(temp);
-
-        tempMoon = new HeavenlyBody("Io", 1.8);
-        solarSystem.put(tempMoon.getName(), tempMoon);
-        temp.addMoon(tempMoon); // temp is still Jupiter
-
-        tempMoon = new HeavenlyBody("Europa", 3.5);
-        solarSystem.put(tempMoon.getName(), tempMoon);
-        temp.addMoon(tempMoon); // temp is still Jupiter
-
-        tempMoon = new HeavenlyBody("Ganymede", 7.1);
-        solarSystem.put(tempMoon.getName(), tempMoon);
-        temp.addMoon(tempMoon); // temp is still Jupiter
-
-        tempMoon = new HeavenlyBody("Callisto", 16.7);
-        solarSystem.put(tempMoon.getName(), tempMoon);
-        temp.addMoon(tempMoon); // temp is still Jupiter
-
-        temp = new HeavenlyBody("Saturn", 10759);
-        solarSystem.put(temp.getName(), temp);
-        planets.add(temp);
-
-        temp = new HeavenlyBody("Uranus", 30660);
-        solarSystem.put(temp.getName(), temp);
-        planets.add(temp);
-
-        temp = new HeavenlyBody("Neptune", 165);
-        solarSystem.put(temp.getName(), temp);
-        planets.add(temp);
-
-        temp = new HeavenlyBody("Pluto", 248);
-        solarSystem.put(temp.getName(), temp);
-        planets.add(temp);
-
-        System.out.println("Planets");
-        for(HeavenlyBody planet : planets) {
-            System.out.println("\t" + planet.getName());
+        for (int i = 1; i <= 100; i++) {
+            squares.add(i * i);
+            cubes.add(i * i * i);
         }
 
-        HeavenlyBody body = solarSystem.get("Mars");
-        System.out.println("Moons of " + body.getName());
-        for(HeavenlyBody jupiterMoon: body.getSatellites()) {
-            System.out.println("\t" + jupiterMoon.getName());
+        System.out.println("There are " + squares.size() + " squares and " + cubes.size() + " cubes.");
+        Set<Integer> union = new HashSet<>(squares);
+        union.addAll(cubes);
+        System.out.println("Union contains " + union.size() + "  elements.");
+
+        Set<Integer> intersection = new HashSet<>(squares);
+        intersection.retainAll(cubes);
+        System.out.println("Intersection contains " + intersection.size() + " elements.");
+        for (int i : intersection) {
+            System.out.println(i + " is the square of " + Math.sqrt(i) + " and the cube of " + Math.cbrt(i));
         }
 
-        Set<HeavenlyBody> moons = new HashSet<>();
-        for(HeavenlyBody planet : planets) {
-            moons.addAll(planet.getSatellites());
+        Set<String> words = new HashSet<>();
+        String sentence = "one day in the year of the fox";
+        String[] arrayWords = sentence.split(" ");
+        words.addAll(Arrays.asList(arrayWords));
+
+        for (String s : words) {
+            System.out.println(s);
         }
 
-        System.out.println("All Moons");
-        for(HeavenlyBody moon : moons) {
-            System.out.println("\t" + moon.getName());
+        Set<String> nature = new HashSet<>();
+        Set<String> divine = new HashSet<>();
+        String[] natureWords = {"all", "nature", "is", "but", "art", "unknown", "to", "thee"};
+        nature.addAll(Arrays.asList(natureWords));
+
+        String[] divineWords = {"to", "err", "is", "human", "to", "forgive", "divine"};
+        divine.addAll(Arrays.asList(divineWords));
+
+        System.out.println("nature - divine:");
+        Set<String> diff1 = new HashSet<>(nature);
+        diff1.removeAll(divine);
+        printSet(diff1);
+
+        System.out.println("divine - nature:");
+        Set<String> diff2 = new HashSet<>(divine);
+        diff2.removeAll(nature);
+        printSet(diff2);
+
+        Set<String> unionTest = new HashSet<>(nature);
+        unionTest.addAll(divine);
+        Set<String> intersectionTest = new HashSet<>(nature);
+        intersectionTest.retainAll(divine);
+
+        System.out.println("Symmetric difference");
+        unionTest.removeAll(intersectionTest);
+        printSet(unionTest);
+
+        if(nature.containsAll(divine)) {
+            System.out.println("divine is a subset of nature");
         }
 
-        HeavenlyBody pluto = new HeavenlyBody("Pluto", 842);
-        planets.add(pluto);
-
-        for(HeavenlyBody planet : planets) {
-            System.out.println(planet.getName() + ": " + planet.getOrbitalPeriod());
+        if(nature.containsAll(intersectionTest)) {
+            System.out.println("intersection is  subset of nature");
         }
 
-        Object o = new Object();
-        o.equals(o);
-        "pluto".equals("");
+        if(divine.containsAll(intersectionTest)) {
+            System.out.println("intersection is a subset of divine");
+        }
+    }
 
-
-
+    private static void printSet(Set<String> set) {
+        System.out.print("\t");
+        for(String s : set) {
+            System.out.print(s + " ");
+        }
+        System.out.println();
     }
 }
