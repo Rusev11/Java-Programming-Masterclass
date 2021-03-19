@@ -1,8 +1,9 @@
 package model;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import javax.swing.plaf.nimbus.State;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Datasource {
     public static final String DB_NAME = "music.db";
@@ -12,15 +13,29 @@ public class Datasource {
     public static final String COLUMN_ALBUMS_ID = "_id";
     public static final String COLUMN_ALBUMS_NAME = "name";
     public static final String COLUMN_ALBUMS_ARTIST = "artist";
+    public static final int INDEX_ALBUMS_ID = 1;
+    public static final int INDEX_ALBUMS_NAME = 2;
+    public static final int INDEX_ALBUMS_ARTIST = 3;
 
     public static final String TABLE_ARTISTS = "artists";
-    public static final String TABLE_ARTISTS_ID = "_id";
-    public static final String TABLE_ARTISTS_NAME = "name";
+    public static final String COLUMN_ARTISTS_ID = "_id";
+    public static final String COLUMN_ARTISTS_NAME = "name";
+    public static final int INDEX_ARTISTS_ID = 1;
+    public static final int INDEX_ARTISTS_NAME = 2;
 
     public static final String TABLE_SONGS = "songs";
-    public static final String COLUMN_ALBUMS_TRACK = "track";
-    public static final String COLUMN_ALBUMS_TITLE = "title";
-    public static final String COLUMN_ALBUMS_ALBUM = "album";
+    public static final String COLUMN_SONGS_ID = "_id";
+    public static final String COLUMN_SONGS_TRACK = "track";
+    public static final String COLUMN_SONGS_TITLE = "title";
+    public static final String COLUMN_SONGS_ALBUM = "album";
+    public static final int INDEX_SONGS_ID = 1;
+    public static final int INDEX_SONGS_TRACK = 2;
+    public static final int INDEX_SONGS_TITLE = 3;
+    public static final int INDEX_SONGS_ALBUM = 4;
+
+    public static final int ORDER_BY_NONE = 1;
+    public static final int ORDER_BY_ASC = 2;
+    public static final int ORDER_BY_DESC = 3;
 
     private Connection conn;
 
@@ -42,6 +57,38 @@ public class Datasource {
             }
         } catch (SQLException e) {
             System.out.println("Could not close connection: " + e.getMessage());
+        }
+    }
+
+    public List<Artist> queryArtists(int sortOrder) {
+        StringBuilder sb = new StringBuilder("SELECT * FROM ");
+        sb.append(TABLE_ARTISTS);
+        if (sortOrder != ORDER_BY_NONE) {
+            sb.append(" ORDER BY ");
+            sb.append(COLUMN_ARTISTS_NAME);
+            sb.append(" COLLATE NOCASE ");
+            if (sortOrder == ORDER_BY_DESC){
+                sb.append("DESC");
+            } else {
+                sb.append("ASC");
+            }
+        }
+
+        try (Statement statement = conn.createStatement();
+             ResultSet results = statement.executeQuery(sb.toString())) {
+
+            List<Artist> artists = new ArrayList<>();
+            while (results.next()) {
+                Artist artist = new Artist();
+                artist.setId(results.getInt(INDEX_ARTISTS_ID));
+                artist.setName(results.getString(INDEX_ARTISTS_NAME));
+                artists.add(artist);
+            }
+            return artists;
+        } catch (SQLException e) {
+            System.out.println("Query failed: " + e.getMessage());
+            e.printStackTrace();
+            return null;
         }
     }
 }
