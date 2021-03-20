@@ -23,22 +23,22 @@ public class Main {
         }
 
         List<String> albumsForArtists = datasource.queryAlbumsForArtist("Iron Maiden", Datasource.ORDER_BY_ASC);
-        for(String album: albumsForArtists){
+        for (String album : albumsForArtists) {
             System.out.println(album);
         }
 
         List<SongArtist> songArtists = datasource.queryArtistsForSong("Go Your Own Way", Datasource.ORDER_BY_ASC);
-        if(songArtists == null) {
+        if (songArtists == null) {
             System.out.println("Couldn't find the artist for the song");
             return;
         }
 
-        for(SongArtist artist : songArtists) {
+        for (SongArtist artist : songArtists) {
             System.out.println("Artist name = " + artist.getArtistName() +
                     " Album name = " + artist.getAlbumName() +
                     " Track = " + artist.getTrack());
         }
-
+        datasource.querySongsMetadata();
         datasource.close();
     }
 }
