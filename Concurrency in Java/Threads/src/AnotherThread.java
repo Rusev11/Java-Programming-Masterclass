@@ -1,7 +1,8 @@
+
 public class AnotherThread extends Thread {
 
     @Override
     public void run() {
-        System.out.println("Hallo from another thread.");
+        System.out.println(ThreadColor.ANSI_BLUE + "Hallo from another thread.");
     }
 }
