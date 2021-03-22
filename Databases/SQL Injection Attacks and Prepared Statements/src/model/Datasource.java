@@ -84,15 +84,45 @@ public class Datasource {
             COLUMN_SONGS_ALBUM + ", " + COLUMN_SONGS_TRACK + " FROM " + TABLE_ARTIST_SONG_VIEW +
             " WHERE " + COLUMN_SONGS_TITLE + " = ?";
 
+    public static final String INSERT_ARTIST = "INSERT INTO " + TABLE_ARTISTS +
+            '(' + COLUMN_ARTISTS_NAME + ") VALUES(?)";
+    public static final String INSERT_ALBUM = "INSERT INTO " + TABLE_ALBUMS +
+            '(' + COLUMN_ALBUMS_NAME + ", " + COLUMN_ALBUMS_ARTIST + ") VALUES(?, ?)";
+    public static final String INSERT_SONG = "INSERT INTO " + TABLE_SONGS +
+            '(' + COLUMN_SONGS_TRACK + ", " + COLUMN_SONGS_TITLE + ", " + COLUMN_SONGS_ALBUM +
+            ") VALUES(?, ?, ?)";
+
+    public static final String QUERY_ARTIST = "SELECT " + COLUMN_ARTISTS_ID + " FROM " +
+            TABLE_ARTISTS + " WHERE " + COLUMN_ARTISTS_NAME + " = ?";
+
+    public static final String QUERY_ALBUM = "SELECT " + COLUMN_ALBUMS_ID + " FROM " +
+            TABLE_ALBUMS + " WHERE " + COLUMN_ALBUMS_NAME + " = ?";
+
     private Connection conn;
 
     private PreparedStatement querySongInfoView;
 
+    private PreparedStatement insertIntoArtists;
+    private PreparedStatement insertIntoAlbums;
+    private PreparedStatement insertIntoSongs;
+
+    private PreparedStatement queryArtist;
+    private PreparedStatement queryAlbum;
+
     public boolean open() {
         try {
             conn = DriverManager.getConnection(CONNECTION_STRING);
+
             querySongInfoView = conn.prepareStatement(QUERY_VIEW_SONG_INFO_PREP);
+            insertIntoArtists = conn.prepareStatement(INSERT_ARTIST, Statement.RETURN_GENERATED_KEYS);
+            insertIntoAlbums = conn.prepareStatement(INSERT_ALBUM, Statement.RETURN_GENERATED_KEYS);
+            insertIntoSongs = conn.prepareStatement(INSERT_SONG);
+
+            queryArtist = conn.prepareStatement(QUERY_ARTIST);
+            queryAlbum = conn.prepareStatement(QUERY_ALBUM);
+
             return true;
+
         } catch (SQLException e) {
             System.out.println("Could not connect to database: " + e.getMessage());
             e.printStackTrace();
@@ -104,6 +134,26 @@ public class Datasource {
         try {
             if (conn != null) {
                 conn.close();
+            }
+
+            if (insertIntoArtists != null) {
+                insertIntoArtists.close();
+            }
+
+            if (insertIntoAlbums != null) {
+                insertIntoAlbums.close();
+            }
+
+            if (insertIntoSongs != null) {
+                insertIntoAlbums.close();
+            }
+
+            if (queryArtist != null) {
+                queryArtist.close();
+            }
+
+            if (queryAlbum != null) {
+                queryAlbum.close();
             }
         } catch (SQLException e) {
             System.out.println("Could not close connection: " + e.getMessage());
@@ -275,6 +325,86 @@ public class Datasource {
         } catch (SQLException e) {
             System.out.println("Query failed: " + e.getMessage());
             return null;
+        }
+    }
+
+    private int insertArtist(String name) throws SQLException {
+        queryArtist.setString(1, name);
+        ResultSet results = queryArtist.executeQuery();
+        if (results.next()) {
+            return results.getInt(1);
+        } else {
+            // insert the artist
+            insertIntoArtists.setString(1, name);
+            int affectedRows = insertIntoArtists.executeUpdate();
+            if (affectedRows != 1) {
+                throw new SQLException("Could not insert artist!");
+            }
+            ResultSet generatedKeys = insertIntoArtists.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                return generatedKeys.getInt(1);
+            } else {
+                throw new SQLException("Could not get _id for artists");
+            }
+        }
+    }
+
+    private int insertAlbum(String name, int artistId) throws SQLException {
+        queryAlbum.setString(1, name);
+        ResultSet results = queryAlbum.executeQuery();
+        if (results.next()) {
+            return results.getInt(1);
+        } else {
+            // insert the album
+            insertIntoAlbums.setString(1, name);
+            insertIntoAlbums.setInt(2, artistId);
+            int affectedRows = insertIntoAlbums.executeUpdate();
+            if (affectedRows != 1) {
+                throw new SQLException("Could not insert album!");
+            }
+            ResultSet generatedKeys = insertIntoAlbums.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                return generatedKeys.getInt(1);
+            } else {
+                throw new SQLException("Could not get _id for albums");
+            }
+        }
+    }
+
+    public void insertSong(String title, String artist, String album, int track) {
+        try {
+            conn.setAutoCommit(false);
+
+            int artistId = insertArtist(artist);
+            int albumId = insertAlbum(album, artistId);
+            insertIntoSongs.setInt(1, track);
+            insertIntoSongs.setString(2, title);
+            insertIntoSongs.setInt(3, albumId);
+
+            int affectedRows = insertIntoSongs.executeUpdate();
+
+
+            if (affectedRows == 1) {
+                conn.commit();
+            } else {
+                throw new SQLException("The song insert failed!");
+            }
+        } catch (
+                SQLException e) {
+            System.out.println("Insert song exeption: " + e.getMessage());
+            try {
+                System.out.println("Performing rollback");
+                conn.rollback();
+            } catch (Exception e2) {
+                System.out.println("Things are really bad! " + e2.getMessage());
+            } finally {
+                try {
+                    System.out.println("Resseting default commit behaviour");
+                    conn.setAutoCommit(true);
+                } catch (SQLException e3) {
+                    System.out.println("Could not reset auto-commit! " + e3.getMessage());
+                }
+            }
         }
     }
 }
