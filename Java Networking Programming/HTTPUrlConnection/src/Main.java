@@ -60,6 +60,6 @@ public class Main {
             System.out.println("Malformed URL: " + e.getMessage());
         } catch(IOException e) {
             System.out.println("IOException: " + e.getMessage());
-        }
+//        }
     }
 }
